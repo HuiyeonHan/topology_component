@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/gojs/release/go-debug.js"></script>
+    <script src="icons.js"></script>
+    <script>
+        function init() {
+
+
+            var $ = go.GraphObject.make;
+            myDiagram = $(go.Diagram, "myDiagramDiv");
+
+            function geoFunc(geoname) {
+                var geo = icons[geoname];
+                if (geo === undefined) geo = icons["pencil"];  // use this for an unknown icon name
+                if (typeof geo === "string") {
+                    geo = icons[geoname] = go.Geometry.parse(geo, true);  // fill each geometry
+                }
+                return geo;
+            }
+
+            myDiagram.nodeTemplate =
+                $(go.Node, "Auto",
+                    {
+
+                        selectionObjectName: "SWITCH",
+                        selectionAdorned: true
+                    },
+                    $(go.Shape, "RoundedRectangle", {
+                        fill: "#eaeaea",
+                        strokeWidth: 2,
+                        stroke: "lightgray",
+                        isGeometryPositioned: true,
+                        fromSpot: go.Spot.Bottom,
+                        toSpot: go.Spot.Top,
+                        portId: "",
+                        name: "SWITCH"
+
+                    }),
+                    $(go.Panel, "Table",
+
+                        {
+                            defaultSeparatorPadding: 3,
+                            background: "#eaeaea",
+                            cursor: "pointer"
+
+                        },
+
+                        //row 1
+                        $(go.RowColumnDefinition, {row: 0}),
+                        $(go.Panel, "TableRow", {row: 0, defaultAlignment: go.Spot.Center},
+                            $(go.TextBlock,
+                                {
+                                    column: 0,
+                                    columnSpan: 4,
+                                    font: "600 13px sans-serif",
+                                    alignment: go.Spot.Center,
+                                    margin: 1
+                                },
+                                new go.Binding("text", "text")),
+                        ),
+
+
+                        //row2
+                        $(go.RowColumnDefinition, {row: 1},
+                            new go.Binding("background", "color")),
+                        $(go.Panel, "TableRow", {row: 1, defaultAlignment: go.Spot.Center},
+                            $(go.Panel, "Auto", {column: 0, columnSpan: 1, margin: 2},
+                                $(go.Shape, "RoundedRectangle", {
+                                        fill: "white",
+                                        parameter1: 3,
+                                        strokeWidth: 2,
+                                        stroke: "royalblue"
+                                    },
+                                    new go.Binding("fill", "on")),
+                                $(go.TextBlock, {
+                                        font: "600 10px sans-serif",
+                                        stroke: "white",
+                                        margin: 3,
+                                        text: "No"
+
+                                    },
+                                    new go.Binding("text", "tgName")
+                                ),
+                            ),
+                            $(go.Panel, "Horizontal", {column: 1, columnSpan: 2, margin: new go.Margin(0, 5)},
+                                $(go.TextBlock,
+                                    {
+                                        font: "700 13px sans-serif",
+                                        margin: new go.Margin(2, 0, 0, 10),
+                                        alignment: go.Spot.Center
+
+                                    },
+                                    new go.Binding("text", "count", function (c) {
+                                        return c + " / "
+                                    })
+                                ),
+                                $(go.TextBlock,
+                                    {
+                                        font: "700 13px sans-serif",
+                                        margin: new go.Margin(2, 10, 0, 0),
+                                        alignment: go.Spot.Center
+
+                                    },
+                                    new go.Binding("text", "wholeCount")
+                                ),
+                            ),
+                            $(go.Panel, "Auto", {column: 3, columnSpan: 1, margin: 2},
+                                $("Button",
+                                    {
+                                        margin: new go.Margin(0, 1, 0, 0),
+                                        click: function () {
+                                            alert("hello");
+                                        }
+                                    },
+
+                                    $(go.Shape,
+                                        {
+                                            margin: 1,
+                                            fill: "gray",
+                                            strokeWidth: 0.5,
+                                            stroke: "gray",
+                                            width: 12,
+                                            height: 12
+                                        },
+                                        new go.Binding("geometry", "geo", geoFunc))
+                                )
+                            )
+
+                            // $(go.Panel, "Auto", {column: 3, columnSpan: 1, margin: 2},
+                            //         $("Button",
+                            //             {
+                            //                 margin: new go.Margin(0, 1, 0, 0),
+                            //                 click: function () {
+                            //                     alert("hello");
+                            //                 }
+                            //             },
+                            //
+                            //             $(go.Shape,
+                            //                 {margin: 1, fill: "gray", strokeWidth: 0.5, stroke: "gray", width: 12, height: 12},
+                            //                 new go.Binding("geometry", "geo", geoFunc))
+                            //         )
+                            //     $(go.Shape, "RoundedRectangle", {
+                            //         fill: "darkgray",
+                            //         parameter1: 3,
+                            //         strokeWidth: 2,
+                            //         stroke: "gray"
+                            //     }),
+                            //         $(go.Shape,
+                            //             {margin: 3, fill: "white", strokeWidth: 0, width: 10, height: 10},
+                            //             new go.Binding("geometry", "geo", geoFunc)),
+                            // ),
+                        )
+                    )
+                )
+            ;
+
+            myDiagram.model = new go.Model(
+                [
+                    {
+                        key: "normal",
+                        text: "school4Floor",
+                        color: "darkseagreen",
+                        tgName: "Aa",
+                        on: "dodgerblue",
+                        geo: "pencil",
+                        count: 5,
+                        wholeCount: 24
+                    },
+                    {
+                        key: "minor",
+                        text: "school4Floor",
+                        color: "gold",
+                        tgName: "Aa",
+                        on: "dodgerblue",
+                        geo: "pencil",
+                        count: 0,
+                        wholeCount: 24
+                    },
+                    {
+                        key: "major",
+                        text: "school4Floor",
+                        color: "lightsalmon",
+                        geo: "pencil",
+                        count: 5,
+                        wholeCount: 24
+                    },
+                    {
+                        key: "critical",
+                        text: "school4Floor",
+                        color: "tomato",
+                        geo: "pencil",
+                        count: 0,
+                        wholeCount: 24
+                    }
+                ]
+            );
+
+
+        }
+    </script>
+    <style>
+        #myDiagramDiv {
+            width: 1000px;
+            height: 1000px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body onload="init()">
+<div id="myDiagramDiv"></div>
+</body>
+</html>
