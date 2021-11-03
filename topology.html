@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/gojs/release/go-debug.js"></script>
+    <script>
+        function init() {
+
+            let width = 50;
+            let height = 8;
+            let progressBarColor = "cornflowerblue"
+
+            var $ = go.GraphObject.make;
+            myDiagram = $(go.Diagram, "myDiagramDiv", {layout: $(go.TreeLayout, {angle: 90, layerSpacing: 100})});
+
+            myDiagram.nodeTemplate =
+                $(go.Node, "Auto",
+                    $(go.Shape, "RoundedRectangle", {
+                        fill: "#eaeaea",
+                        strokeWidth: 2,
+                        stroke: "lightgray",
+                        isGeometryPositioned: true
+                    }),
+                    $(go.Panel, "Table",
+
+                        {
+                            defaultSeparatorPadding: 5,
+                            background: "#eaeaea"
+                        },
+
+                        //row 1
+                        $(go.RowColumnDefinition, {row: 0}),
+                        $(go.Panel, "TableRow", {row: 0},
+                            $(go.TextBlock, "RX", {column: 0, font: "normal small-caps normal 10px sans-serif"}),
+                            $(go.Shape, "RoundedRectangle", {
+                                    column: 1,
+                                    columnSpan: 2,
+                                    fill: "lightgray",
+                                    strokeWidth: 0,
+                                    width: width,
+                                    height: height,
+                                    alignment: go.Spot.Left,
+
+                                },
+                            ),
+                            $(go.Shape, "RoundedRectangle", {
+                                    column: 1,
+                                    columnSpan: 2,
+                                    fill: progressBarColor,
+                                    strokeWidth: 0,
+                                    width: 0,
+                                    height: height,
+                                    alignment: go.Spot.Left,
+                                },
+                                new go.Binding("width", "rx", function (r) {
+                                    return width * (r / 100)
+                                }))
+                        ),
+
+                        //row 2
+                        $(go.RowColumnDefinition, {row: 1},
+                            new go.Binding("background", "color")),
+                        $(go.Panel, "TableRow", {row: 1},
+                            $(go.Shape, "Rectangle", {
+                                    column: 1,
+                                    fill: "yellowGreen",
+                                    strokeWidth: 0,
+                                    width: 50,
+                                    height: 18,
+                                },
+                                new go.Binding("fill", "color")),
+                            $(go.TextBlock, "Switch Title", {
+                                column: 0,
+                                columnSpan: 4,
+                                font: "normal normal 600 12px sans-serif"
+                            },
+                                new go.Binding("text"))
+                        ),
+
+                        //row3
+                        $(go.RowColumnDefinition, {row: 2}),
+                        $(go.Panel, "TableRow", {row: 2},
+                            $(go.TextBlock, "TX", {column: 0, font: "normal small-caps normal 10px sans-serif"}),
+                            $(go.Shape, "RoundedRectangle", {
+                                column: 1,
+                                columnSpan: 3,
+                                fill: "lightgray",
+                                strokeWidth: 0,
+                                width: width,
+                                height: height,
+                                alignment: go.Spot.Left
+                            }),
+                            $(go.Shape, "RoundedRectangle", {
+                                    column: 1,
+                                    columnSpan: 2,
+                                    fill: progressBarColor,
+                                    strokeWidth: 0,
+                                    width: 0,
+                                    height: height,
+                                    alignment: go.Spot.Left
+                                },
+                                new go.Binding("width", "tx", function (t) { //세번째 인자에 function을 넣으면 두번째 인자값으로 계산하는 등의 처리가 가능해짐
+                                    return width * (t / 100)
+                                }))
+                        ),
+                    ));
+            //
+            // myDiagram.nodeTemplateMap.add("Host", // 여러종류의 노드템플릿이 필요한경우 이걸 사용하면 됨!
+            //     $(go.Node, "Spot",
+            //         $(go.Shape, "RoundedRectangle",
+            //             {width: 50, height: 50, fill: "green", stroke: "green", strokeWidth: 2},
+            //             new go.Binding("fill", "color")),
+            //         $(go.TextBlock,
+            //             new go.Binding("text")))
+            // );
+
+            myDiagram.linkTemplate =
+                $(go.Link,
+                    {
+                        curve: go.Link.Bezier,
+                        toEndSegmentLength: 30, fromEndSegmentLength: 30
+                    },
+                    $(go.Shape, {strokeWidth: 2, stroke: "lightgray"}) // the link shape, with the default black stroke
+                );
+
+            myDiagram.model = new go.TreeModel(
+                [
+                    {key: "normal", color: "darkseagreen", rx: 20, tx: 10},
+                    {key: "minor", color: "gold", rx: 30, tx: 20, parent: "normal"},
+                    {key: "major", color: "lightsalmon", rx: 45, tx: 50, parent: "normal"},
+                    {key: "critical", color: "tomato", rx: 40, tx: 60, parent: "normal"},
+                    {key: "A", text: "port1", color: "tomato", parent: "major", category: "Host"},
+                    {key: "B", text: "port2", color: "darkseagreen", parent: "major", category: "Host"},
+                    {key: "C", text: "port3", color: "darkseagreen", parent: "major", category: "Host"},
+                    {key: "A", text: "port1", color: "tomato", parent: "minor", category: "Host"},
+                    {key: "B", text: "port2", color: "darkseagreen", parent: "minor", category: "Host"},
+                    {key: "C", text: "port3", color: "darkseagreen", parent: "critical", category: "Host"}
+
+
+                ]
+            );
+
+
+            // myDiagram.model.set(dataObj, "color", test.value); 데이터 모델을 만들어두고 나중에 값을 외부에서 가져올 때는 이런식으로 가져오면 됨. 세번째 인자도 굳이 문자열일 필요는 없음
+
+
+        }
+    </script>
+    <style>
+        #myDiagramDiv {
+            width: 1000px;
+            height: 1000px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body onload="init()">
+<div id="myDiagramDiv">
+    <!--    링크가 연결될 수있는 요소를 포트라고합니다.-->
+    <!--    참고 사이트 : https://gojs.net/latest/samples/IVRtree.html-->
+</div>
+</body>
+</html>
